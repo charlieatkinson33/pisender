@@ -1,18 +1,55 @@
-name: Build PiSender EXE
+name: Build PiSender EXE and Create Release
 
-on: [push]
+on: 
+  push:
+    branches:
+      - main
+      - master
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+      
       - name: Package Application
         uses: JackMcKew/pyinstaller-action-windows@main
         with:
           path: .
           spec: pisender.spec
-      - uses: actions/upload-artifact@v4
+      
+      - name: List build output
+        run: |
+          echo "Listing dist/windows contents:"
+          ls -lah dist/windows/
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: pisender-exe
           path: dist/windows
+      
+      - name: Generate Release Tag
+        id: tag
+        run: |
+          echo "tag=v$(date +'%Y%m%d-%H%M%S')-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Release ${{ steps.tag.outputs.tag }}
+          body: |
+            Automated release from commit ${{ github.sha }}
+            Built on: ${{ steps.tag.outputs.date }}
+            
+            ## Changes
+            ${{ github.event.head_commit.message }}
+          files: dist/windows/pisender.exe
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
