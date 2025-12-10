@@ -93,7 +93,7 @@ def create_control(frame, key, color):
                 value += 1
                 suffix = "%" if key == "SpO2" else ""
                 update_new_value(key, f"{value:.1f}{suffix}")
-        except:
+        except (ValueError, IndexError, AttributeError):
             pass
 
     def decrease():
@@ -108,7 +108,7 @@ def create_control(frame, key, color):
                 value -= 1
                 suffix = "%" if key == "SpO2" else ""
                 update_new_value(key, f"{value:.1f}{suffix}")
-        except:
+        except (ValueError, IndexError, AttributeError):
             pass
 
     def edit_manual(event):
