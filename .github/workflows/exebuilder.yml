@@ -20,6 +20,11 @@ jobs:
           path: .
           spec: pisender.spec
       
+      - name: List build output
+        run: |
+          echo "Listing dist/windows contents:"
+          ls -lah dist/windows/
+      
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
