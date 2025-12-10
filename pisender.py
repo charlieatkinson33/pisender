@@ -158,7 +158,7 @@ for key in current_display:
 right_frame = tk.Frame(main_container, bg="white", relief="ridge", borderwidth=2)
 right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(5, 0))
 
-tk.Label(right_frame, text="✏️ NEW VALUES (Edit Here)", font=("Helvetica", 14, "bold"), 
+tk.Label(right_frame, text=" NEW VALUES (Edit Here)", font=("Helvetica", 14, "bold"), 
          bg="#fff4e6", fg="#333", pady=10).pack(fill=tk.X)
 
 for key in new_values:
