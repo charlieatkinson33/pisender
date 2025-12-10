@@ -88,11 +88,15 @@ def create_control(frame, key, color):
                 sys += 1
                 dia += 1
                 update_new_value(key, f"{sys}/{dia}")
+            elif key == "Temperature":
+                value = float(new_values[key])
+                value += 1
+                update_new_value(key, f"{value:.1f}")
             else:
                 value = float(new_values[key].replace("%", ""))
                 value += 1
                 suffix = "%" if key == "SpO2" else ""
-                update_new_value(key, f"{value:.1f}{suffix}")
+                update_new_value(key, f"{int(value)}{suffix}")
         except (ValueError, IndexError, AttributeError):
             pass
 
@@ -103,11 +107,15 @@ def create_control(frame, key, color):
                 sys -= 1
                 dia -= 1
                 update_new_value(key, f"{sys}/{dia}")
+            elif key == "Temperature":
+                value = float(new_values[key])
+                value -= 1
+                update_new_value(key, f"{value:.1f}")
             else:
                 value = float(new_values[key].replace("%", ""))
                 value -= 1
                 suffix = "%" if key == "SpO2" else ""
-                update_new_value(key, f"{value:.1f}{suffix}")
+                update_new_value(key, f"{int(value)}{suffix}")
         except (ValueError, IndexError, AttributeError):
             pass
 
