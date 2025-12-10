@@ -53,15 +53,15 @@ def send_data():
             current_display[key] = new_values[key]
             current_labels[key].config(text=current_display[key])
         
-        messagebox.showinfo("Success", "Data sent successfully to OBS!")
+        messagebox.showinfo("Success", "It didn't break! Obs updated")
     except Exception as e:
         print("[Sender] Error:", e)
-        messagebox.showerror("Send Error", f"Could not send data to Pi, try connecting to VitalsPi Network, pass:vitals123: {e}")
+        messagebox.showerror("Send Error", f"Could not send obs, try connecting to VitalsPi Network, pass:vitals123: {e}")
 
 # --- GUI
 root = tk.Tk()
 root.state('zoomed')
-root.title("Vitals Sender - OBS Controller")
+root.title("Charlie is a genius")
 root.geometry("700x600")
 root.configure(bg="#f0f0f0")
 
@@ -140,7 +140,7 @@ main_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 left_frame = tk.Frame(main_container, bg="white", relief="ridge", borderwidth=2)
 left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
 
-tk.Label(left_frame, text="📺 CURRENT DISPLAY (OBS)", font=("Helvetica", 14, "bold"), 
+tk.Label(left_frame, text=" CURRENT DISPLAY (OBS)", font=("Helvetica", 14, "bold"), 
          bg="#e8f4f8", fg="#333", pady=10).pack(fill=tk.X)
 
 for key in current_display:
