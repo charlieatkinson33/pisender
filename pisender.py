@@ -60,6 +60,7 @@ def send_data():
 
 # --- GUI
 root = tk.Tk()
+root.state('zoomed')
 root.title("Vitals Sender - OBS Controller")
 root.geometry("700x600")
 root.configure(bg="#f0f0f0")
