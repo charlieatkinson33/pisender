@@ -150,12 +150,16 @@ def toggle_visibility(key):
     visibility_state[key] = not visibility_state[key]
     if visibility_state[key]:
         # Show the content frames
-        visibility_frames[key].pack(pady=8, padx=10)
+        visibility_frames[key].pack(pady=3, padx=10)
         visibility_frames[key + "_content"].pack(pady=8, padx=10)
+        # Update toggle button text
+        visibility_frames[key + "_toggle"].config(text="👁", relief="raised")
     else:
         # Hide the content frames
         visibility_frames[key].pack_forget()
         visibility_frames[key + "_content"].pack_forget()
+        # Update toggle button text
+        visibility_frames[key + "_toggle"].config(text="🚫", relief="sunken")
 
 # --- Create a scrollable frame using Canvas
 canvas_frame = tk.Frame(root, bg="#f0f0f0")
@@ -194,21 +198,21 @@ tk.Label(left_frame, text=" CURRENT DISPLAY (OBS)", font=("Helvetica", 14, "bold
          bg="#e8f4f8", fg="#333", pady=10).pack(fill=tk.X)
 
 for key in current_display:
-    # Container frame for each vital sign (to be shown/hidden)
-    container = tk.Frame(left_frame, bg="white")
-    container.pack(pady=8, padx=10, fill=tk.X)
-    visibility_frames[key + "_left"] = container
+    # Outer container that always stays visible
+    outer_container = tk.Frame(left_frame, bg="white")
+    outer_container.pack(pady=4, padx=10, fill=tk.X)
     
-    # Toggle button
-    toggle_btn = tk.Checkbutton(container, text="☑", font=("Helvetica", 10), 
-                                bg="white", fg=colors.get(key, "black"),
-                                selectcolor="white", indicatoron=False, width=3,
-                                command=lambda k=key: toggle_visibility(k))
-    toggle_btn.select()  # Start selected
+    # Toggle button (always visible)
+    toggle_btn = tk.Button(outer_container, text="👁", font=("Helvetica", 12), 
+                          bg="white", fg=colors.get(key, "black"),
+                          width=3, relief="raised", borderwidth=1,
+                          command=lambda k=key: toggle_visibility(k))
     toggle_btn.pack(side=tk.TOP, anchor="ne", padx=2, pady=2)
+    visibility_frames[key + "_toggle"] = toggle_btn
     
-    f = tk.Frame(container, bg="white")
-    f.pack(pady=8, padx=10)
+    # Content frame (can be hidden/shown)
+    f = tk.Frame(outer_container, bg="white")
+    f.pack(pady=3, padx=10)
     tk.Label(f, text=key, bg="white", font=("Helvetica", 11, "bold"), 
              fg=colors.get(key, "black")).pack()
     
