@@ -149,15 +149,15 @@ def toggle_visibility(key):
     """Toggle visibility of a vital sign on both left and right sides"""
     visibility_state[key] = not visibility_state[key]
     if visibility_state[key]:
-        # Show the content frames
+        # Show the content frames on both left and right sides
         visibility_frames[key].pack(pady=3, padx=10)
-        visibility_frames[key + "_content"].pack(pady=8, padx=10)
+        visibility_frames[key + "_right"].pack(pady=8, padx=10)
         # Update toggle button text
         visibility_frames[key + "_toggle"].config(text="👁", relief="raised")
     else:
-        # Hide the content frames
+        # Hide the content frames on both left and right sides
         visibility_frames[key].pack_forget()
-        visibility_frames[key + "_content"].pack_forget()
+        visibility_frames[key + "_right"].pack_forget()
         # Update toggle button text
         visibility_frames[key + "_toggle"].config(text="🚫", relief="sunken")
 
@@ -233,19 +233,19 @@ tk.Label(right_frame, text=" NEW VALUES (Edit Here)", font=("Helvetica", 14, "bo
          bg="#fff4e6", fg="#333", pady=10).pack(fill=tk.X)
 
 for key in new_values:
-    # Container frame for each vital sign (linked to left side visibility)
-    container = tk.Frame(right_frame, bg="white")
-    container.pack(pady=8, padx=10, fill=tk.X)
-    visibility_frames[key + "_right"] = container
+    # Outer container that always stays visible (to maintain spacing)
+    outer_container = tk.Frame(right_frame, bg="white")
+    outer_container.pack(pady=4, padx=10, fill=tk.X)
     
-    f = tk.Frame(container, bg="white")
+    # Content frame (can be hidden/shown, linked to left side toggle)
+    f = tk.Frame(outer_container, bg="white")
     f.pack(pady=8, padx=10)
     tk.Label(f, text=key, bg="white", font=("Helvetica", 11, "bold"), 
              fg=colors.get(key, "black")).pack()
     create_control(f, key, colors.get(key, "black"))
     
     # Store the content frame for hiding/showing (links to left toggle)
-    visibility_frames[key + "_content"] = f
+    visibility_frames[key + "_right"] = f
 
 # --- Send button at the bottom (outside scrollable area)
 send_button = tk.Button(root, text="📤 SEND TO OBS", command=send_data, 
