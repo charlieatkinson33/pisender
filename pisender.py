@@ -52,8 +52,8 @@ def send_data():
         messagebox.showerror("Connection Error", "Cannot reach Pi at 192.168.4.1. Try connecting to VitalsPi Network, pass:vitals123")
         return
     try:
-        # Only send visible vital signs
-        visible_values = {k: v for k, v in new_values.items() if visibility_state.get(k, True)}
+        # Only send visible vital signs (explicit key checking)
+        visible_values = {k: v for k, v in new_values.items() if k in visibility_state and visibility_state[k]}
         data = ",".join(f"{k}={v}" for k, v in visible_values.items())
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((PI_IP, PORT))
@@ -152,14 +152,14 @@ def toggle_visibility(key):
         # Show the content frames on both left and right sides
         visibility_frames[key].pack(pady=3, padx=10)
         visibility_frames[key + "_right"].pack(pady=8, padx=10)
-        # Update toggle button text
-        visibility_frames[key + "_toggle"].config(text="👁", relief="raised")
+        # Update toggle button text with accessible label
+        visibility_frames[key + "_toggle"].config(text="👁 Show", relief="raised")
     else:
         # Hide the content frames on both left and right sides
         visibility_frames[key].pack_forget()
         visibility_frames[key + "_right"].pack_forget()
-        # Update toggle button text
-        visibility_frames[key + "_toggle"].config(text="🚫", relief="sunken")
+        # Update toggle button text with accessible label
+        visibility_frames[key + "_toggle"].config(text="🚫 Hide", relief="sunken")
 
 # --- Create a scrollable frame using Canvas
 canvas_frame = tk.Frame(root, bg="#f0f0f0")
@@ -180,11 +180,21 @@ canvas.configure(yscrollcommand=scrollbar.set)
 canvas.pack(side="left", fill=tk.BOTH, expand=True)
 scrollbar.pack(side="right", fill="y")
 
-# Enable mouse wheel scrolling
+# Enable mouse wheel scrolling (platform-aware)
 def _on_mousewheel(event):
-    canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+    # Windows and macOS have different delta values
+    # Windows: event.delta is typically +/-120
+    # macOS: event.delta is typically +/-1
+    # Linux uses different events altogether
+    if event.num == 5 or event.delta < 0:
+        canvas.yview_scroll(1, "units")
+    elif event.num == 4 or event.delta > 0:
+        canvas.yview_scroll(-1, "units")
 
-canvas.bind_all("<MouseWheel>", _on_mousewheel)
+# Bind to canvas specifically, not globally
+canvas.bind("<MouseWheel>", _on_mousewheel)  # Windows and macOS
+canvas.bind("<Button-4>", _on_mousewheel)     # Linux scroll up
+canvas.bind("<Button-5>", _on_mousewheel)     # Linux scroll down
 
 # --- Main container inside scrollable frame
 main_container = tk.Frame(scrollable_frame, bg="#f0f0f0")
@@ -202,10 +212,10 @@ for key in current_display:
     outer_container = tk.Frame(left_frame, bg="white")
     outer_container.pack(pady=4, padx=10, fill=tk.X)
     
-    # Toggle button (always visible)
-    toggle_btn = tk.Button(outer_container, text="👁", font=("Helvetica", 12), 
+    # Toggle button (always visible) with accessible text
+    toggle_btn = tk.Button(outer_container, text="👁 Show", font=("Helvetica", 10), 
                           bg="white", fg=colors.get(key, "black"),
-                          width=3, relief="raised", borderwidth=1,
+                          width=8, relief="raised", borderwidth=1,
                           command=lambda k=key: toggle_visibility(k))
     toggle_btn.pack(side=tk.TOP, anchor="ne", padx=2, pady=2)
     visibility_frames[key + "_toggle"] = toggle_btn
